@@ -26,10 +26,20 @@ async function run() {
         // Connect the client to the server	(optional starting in v4.7)
         await client.connect();
 
+        // database
         const db = client.db('ToyShop').collection('toys')
 
+        app.get('/', async (req, res) => {
+            const result = await db.find().limit(20).toArray()
+            res.send(result)
+        })
 
-
+        app.get('/category', async (req, res) => {
+            let query = {};
+            query = { category: req.query.category }
+            const result = await db.find(query).limit(6).toArray()
+            res.send(result)
+        })
 
         app.get('/mytoys', async (req, res) => {
             let query = {};
@@ -38,9 +48,12 @@ async function run() {
             res.send(result)
         })
 
-        // toy sort
-
-
+        app.get('/my-toys/sort', async (req, res) => {
+            let query = {};
+            query = { sellerEmail: req.query.email }
+            const result = await db.find(query).sort({ price: parseInt(req.query.sorting) }).toArray()
+            res.send(result);
+        })
 
         app.get('/alltoys/:id', async (req, res) => {
             const query = { _id: new ObjectId(req.params.id) }
@@ -88,13 +101,13 @@ async function run() {
 
 
 
-    // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
-    console.log("Pinged your deployment. You successfully connected to MongoDB!");
-} finally {
-    // Ensures that the client will close when you finish/error
-    // await client.close();
-}
+        // Send a ping to confirm a successful connection
+        await client.db("admin").command({ ping: 1 });
+        console.log("Pinged your deployment. You successfully connected to MongoDB!");
+    } finally {
+        // Ensures that the client will close when you finish/error
+        // await client.close();
+    }
 }
 run().catch(console.dir);
 
