@@ -60,8 +60,23 @@ async function run() {
                 sellerName: req.body.sellerName,
                 sellerEmail: req.body.sellerEmail,
             }
-
             const result = await db.insertOne(data)
+            res.send(result)
+        })
+
+        app.put('/', async (req, res) => {
+            const filter = { _id: new ObjectId(req.body.id) }
+            const options = { upsert: true }
+            const update = {
+                $set: {
+                    name: req.body.name,
+                    price: req.body.price,
+                    quantity: req.body.quantity,
+                    description: req.body.description,
+                    rating: req.body.rating
+                }
+            }
+            const result = await db.updateOne(filter, options, update)
             res.send(result)
         })
 
