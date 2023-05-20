@@ -48,6 +48,23 @@ async function run() {
             res.send(result)
         })
 
+        app.post('/addtoys', async (req, res) => {
+            const data = {
+                name: req.body.name,
+                image: req.body.image,
+                price: parseInt(req.body.price),
+                rating: parseInt(req.body.rating),
+                quantity: parseInt(req.body.quantity),
+                description: req.body.description,
+                category: req.body.category,
+                sellerName: req.body.sellerName,
+                sellerEmail: req.body.sellerEmail,
+            }
+
+            const result = await db.insertOne(data)
+            res.send(result)
+        })
+
 
 
         // Send a ping to confirm a successful connection
