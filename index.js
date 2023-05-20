@@ -80,15 +80,21 @@ async function run() {
             res.send(result)
         })
 
+        app.delete('mytoys', async (req, res) => {
+            const query = { _id: new ObjectId(req.body.data) }
+            const result = await db.deleteOne(query)
+            res.send(result)
+        })
 
 
-        // Send a ping to confirm a successful connection
-        await client.db("admin").command({ ping: 1 });
-        console.log("Pinged your deployment. You successfully connected to MongoDB!");
-    } finally {
-        // Ensures that the client will close when you finish/error
-        // await client.close();
-    }
+
+    // Send a ping to confirm a successful connection
+    await client.db("admin").command({ ping: 1 });
+    console.log("Pinged your deployment. You successfully connected to MongoDB!");
+} finally {
+    // Ensures that the client will close when you finish/error
+    // await client.close();
+}
 }
 run().catch(console.dir);
 
