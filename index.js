@@ -1,13 +1,14 @@
 const express = require('express');
+const app = express()
 const cors = require('cors');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config()
-const app = express();
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 5000
 
-// middleware
+
 app.use(express.json())
 app.use(cors());
+
 
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.zuw1kb6.mongodb.net/?retryWrites=true&w=majority`;
@@ -20,14 +21,13 @@ const client = new MongoClient(uri, {
         deprecationErrors: true,
     }
 });
-
+[]
 async function run() {
     try {
-        // Connect the client to the server	(optional starting in v4.7)
-        // await client.connect();
+        client.connect();
 
-        // database
-        const db = client.db('ToyShop').collection('toys')
+        const db = client.db('ToyShop').collection('toys');
+
 
         app.get('/', async (req, res) => {
             const result = await db.find().limit(20).toArray()
@@ -41,24 +41,25 @@ async function run() {
             res.send(result)
         })
 
-        app.get('/mytoys', async (req, res) => {
+        app.get('/my-toys', async (req, res) => {
             let query = {};
             query = { sellerEmail: req.query.email }
             const result = await db.find(query).toArray()
             res.send(result)
         })
 
-        app.get('/mytoys/sort', async (req, res) => {
+        app.get('/my-toys/sort', async (req, res) => {
             let query = {};
             query = { sellerEmail: req.query.email }
             const result = await db.find(query).sort({ price: parseInt(req.query.sorting) }).toArray()
             res.send(result);
         })
 
-        app.get('/alltoys/:id', async (req, res) => {
-            const query = { _id: new ObjectId(req.params.id) }
-            const result = await db.find(query).toArray()
-            res.send(result)
+        app.get('/all-toys/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
+            const result = await db.find(query).toArray();
+            res.send(result);
         })
 
         app.post('/addtoys', async (req, res) => {
@@ -89,23 +90,19 @@ async function run() {
                     rating: req.body.rating
                 }
             }
-            const result = await db.updateOne(filter, options, update)
+            const result = await db.updateOne(filter, update, options)
             res.send(result)
         })
 
-        app.delete('mytoys', async (req, res) => {
+        app.delete('/my-toys', async (req, res) => {
             const query = { _id: new ObjectId(req.body.data) }
             const result = await db.deleteOne(query)
             res.send(result)
         })
 
-
-
-        // Send a ping to confirm a successful connection
         await client.db("admin").command({ ping: 1 });
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
     } finally {
-        // Ensures that the client will close when you finish/error
         // await client.close();
     }
 }
@@ -113,10 +110,6 @@ run().catch(console.dir);
 
 
 
-app.get('/', (req, res) => {
-    res.send('Toy Shop is running')
-})
 
-app.listen(port, () => {
-    console.log(`Toy Shop Server is running on port ${port}`)
-})
+
+app.listen(port, () => { console.log('listening') })
