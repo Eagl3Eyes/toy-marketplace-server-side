@@ -48,7 +48,7 @@ async function run() {
             res.send(result)
         })
 
-        app.get('/my-toys/sort', async (req, res) => {
+        app.get('/mytoys/sort', async (req, res) => {
             let query = {};
             query = { sellerEmail: req.query.email }
             const result = await db.find(query).sort({ price: parseInt(req.query.sorting) }).toArray()
